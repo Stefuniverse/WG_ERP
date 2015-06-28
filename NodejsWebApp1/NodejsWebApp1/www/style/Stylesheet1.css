@@ -1,0 +1,38 @@
+﻿body {
+    background-color: #FCFCFC;
+}
+
+#login {
+    border: 5px solid #006633;
+    width: 500px;
+    height:400px;
+    text-align:left;
+    position:absolute;
+    top:50%; left:0px; right:0px;
+    margin:auto;
+    transform: translate(0, -50%);
+}
+
+#login input {
+    height:18px;
+    position:relative;
+    left:30px;
+    width:370px;
+    font-size:18px;
+}
+
+#login h2 {
+    position:relative;
+    left: 30px;
+
+}
+
+#login h3 {
+    position:relative;
+    left: 35px;
+}
+
+h1 {
+    position:relative;
+    left: 10%;
+}
