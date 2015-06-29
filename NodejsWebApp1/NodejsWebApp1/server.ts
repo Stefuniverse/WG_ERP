@@ -1,7 +1,9 @@
 ﻿var http = require('http');
 var fs = require('fs');
 var path = require('path');
-var mysql = require('mysql');
+var sqlite3 = require('sqlite3').verbose();
+var utils = require('util');
+var querystring = require('querystring');
 
 
 var basedir = './www';
@@ -19,7 +21,29 @@ function handleRequest(req, res) {
 
     var url = req.url;
     if (url === '/') {
-        sendFile('www/main.html', "text/html", res, endCon);
+        sendFile('www/login.html', "text/html", res, endCon);
+    } else if (url === '/logon') {
+
+        if (req.method === 'POST') {
+            console.log('Login request gained from' + req.host);
+            var fullBody = '';
+
+            req.on('data', function (chunk) {
+
+                fullBody += chunk.toString();
+            });
+
+            req.on('end', function () {
+
+                var data = querystring.parse(fullBody);
+                if (data.uname && data.password) {
+                    console.log(data.uname);
+                    
+
+                }
+            });
+        }
+
     } else {
         url = basedir + url;
         console.log(url);
@@ -49,6 +73,15 @@ function sendFile(file, type, res, callback) {
     });
 }
 
+function checkPasswd(uname, passwd) {
+    db.run("SELECT passwd FROM test WHERE uname=" + uname);
+}
+
 var server = http.createServer(handleRequest);
+
 server.listen(1337);
 console.log('Server startet');
+var db = new sqlite3.Database(':memory:');
+db.run("CREATE TABLE test (uname TEXT, passwd TEXT)"), function () {
+    db.run("INSERT INTO test VALUES (Stef,test)");
+};

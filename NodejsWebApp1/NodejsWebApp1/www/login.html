@@ -10,13 +10,16 @@
      </h1> -->
     <br /><br />
     <div id="login">
-        <h2>
-            Login
-        </h2><br /><br />
-        <h3>Username:</h3>
-        <input id="Username" autocomplete="on" autofocus type="text" /> <br />
-        <h3> Password:</h3>
-        <input id="Password" type="password" />
+        <form method="post" enctype="application/x-www-form-urlencoded" action="/logon">
+            <h2>
+                Login
+            </h2><br /><br />
+            <h3>Username:</h3>
+            <input id="Username" autocomplete="on" autofocus type="text" name="uname" value="hue" /> <br />
+            <h3> Password:</h3>
+            <input id="Password" type="password" name="password" value="kek" />
+            <input type="submit" />
+        </form>
     </div>
 </body>
 </html>
