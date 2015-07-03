@@ -37,7 +37,8 @@ function handleRequest(req, res) {
 
                 var data = querystring.parse(fullBody);
                 if (data.uname && data.password) {
-                    console.log(data.uname);
+			//password-check
+                    console.log(data.uname+data.password);
                     
 
                 }
@@ -49,24 +50,24 @@ function handleRequest(req, res) {
         console.log(url);
         if (fs.existsSync(url)) {
             if (supported[path.extname(url)]) {
-                sendFile(url, supported[path.extname(url)], res, endCon);
+                sendFile(url, supported[path.extname(url)],200, res, endCon);
             } else {
-                res.writeHeader(403, { "Content-Type": "text/html" });
+		sendFile("403.html","text/html",403, res, endCon);
             }
         } else {
-            res.writeHead(404, { "Content-Type": "text/html" });
+	    sendFile("404.html","text/html",404, res, endCon);
             res.end();
         }
     }
     console.log(req.method);
 }
 
-function sendFile(file, type, res, callback) {
+function sendFile(file, type, statcode, res, callback) {
     fs.readFile(file, function (err, html) {
         if (err) {
             throw err;
         } else {
-            res.writeHeader(200, { "Content-Type": type });
+            res.writeHeader(statcode, { "Content-Type": type });
             res.write(html);
             callback(res);
         }
@@ -81,7 +82,7 @@ var server = http.createServer(handleRequest);
 
 server.listen(1337);
 console.log('Server startet');
-var db = new sqlite3.Database(':memory:');
-db.run("CREATE TABLE test (uname TEXT, passwd TEXT)"), function () {
-    db.run("INSERT INTO test VALUES (Stef,test)");
+var db = new sqlite3.Database(./neu.db);
+//db.run("CREATE TABLE test (uname TEXT, passwd TEXT)"), function () {
+  //  db.run("INSERT INTO test VALUES (Stef,test)");
 };
