@@ -1,7 +1,7 @@
 ﻿var http = require('http');
 var fs = require('fs');
 var path = require('path');
-var sqlite3 = require('sqlite3').verbose();
+var sqlite3 = require('sqlite3')
 var utils = require('util');
 var querystring = require('querystring');
 
@@ -37,9 +37,9 @@ function handleRequest(req, res) {
 
                 var data = querystring.parse(fullBody);
                 if (data.uname && data.password) {
-                    console.log(data.uname);
+                    console.log(data.uname + data.password);
+                    checkPasswd(data.uname, data.password);
                     
-
                 }
             });
         }
@@ -74,14 +74,21 @@ function sendFile(file, type, res, callback) {
 }
 
 function checkPasswd(uname, passwd) {
-    db.run("SELECT passwd FROM test WHERE uname=" + uname);
+    console.log("SELECT passwd FROM test WHERE uname=\"" + uname + "\";");
+    db.get("SELECT passwd FROM test WHERE uname=\"" + uname+"\";", function (err, row) {
+        if (row.passwd === undefined) {
+            console.log("Zugang für user" + uname + " gewähren");
+            console.log("Nutzer nicht vorhanden");
+        } else if (row.passwd === passwd) {
+            console.log("User nicht vorhanden");
+        } else {
+            console.log("Passwort falsch");
+        }
+    });
 }
 
 var server = http.createServer(handleRequest);
 
 server.listen(1337);
 console.log('Server startet');
-var db = new sqlite3.Database(':memory:');
-db.run("CREATE TABLE test (uname TEXT, passwd TEXT)"), function () {
-    db.run("INSERT INTO test VALUES (Stef,test)");
-};
+var db = new sqlite3.Database('neu.db');
