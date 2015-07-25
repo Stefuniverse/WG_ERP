@@ -4,6 +4,7 @@ var path = require('path');
 var sqlite3 = require('sqlite3')
 var utils = require('util');
 var querystring = require('querystring');
+var sessions = require('sesh/lib/core').magicSession();
 
 
 var basedir = './www';
@@ -16,6 +17,7 @@ var supported = {
 function handleRequest(req, res) {
     var routing = basedir;
     var endCon = function (res) {
+        console.log(req.session.data.user);
         res.end();
     }
 
@@ -37,10 +39,9 @@ function handleRequest(req, res) {
 
                 var data = querystring.parse(fullBody);
                 if (data.uname && data.password) {
-                    console.log(data.uname + data.password);
-                    checkPasswd(data.uname, data.password);
-                    
+                    checkPasswd(data.uname, data.password, req, res);
                 }
+                    
             });
         }
 
@@ -73,14 +74,15 @@ function sendFile(file, type, res, callback) {
     });
 }
 
-function checkPasswd(uname, passwd) {
+function checkPasswd(uname, passwd, req, res) {
     console.log("SELECT passwd FROM test WHERE uname=\"" + uname + "\";");
     db.get("SELECT passwd FROM test WHERE uname=\"" + uname+"\";", function (err, row) {
         if (row.passwd === undefined) {
-            console.log("Zugang für user" + uname + " gewähren");
+            
             console.log("Nutzer nicht vorhanden");
         } else if (row.passwd === passwd) {
-            console.log("User nicht vorhanden");
+            req.session.data.user = uname;
+            console.log("Zugang für user" + uname + " gewähren");
         } else {
             console.log("Passwort falsch");
         }
