@@ -13,14 +13,12 @@ var supported = {
     ".css": "text/css"
 }
 
+function endCon (res) {
+    res.end();
+}
 
 function handleRequest(req, res) {
     var routing = basedir;
-    var endCon = function (res) {
-        console.log(req.session.data.user);
-        res.end();
-    }
-
     var url = req.url;
     if (url === '/') {
         sendFile('www/login.html', "text/html", res, endCon);
@@ -41,23 +39,29 @@ function handleRequest(req, res) {
                 if (data.uname && data.password) {
                     checkPasswd(data.uname, data.password, req, res);
                 }
-                    
+
             });
         }
 
     } else {
-        url = basedir + url;
-        console.log(url);
-        if (fs.existsSync(url)) {
-            if (supported[path.extname(url)]) {
-                sendFile(url, supported[path.extname(url)], res, endCon);
-            } else {
-                res.writeHeader(403, { "Content-Type": "text/html" });
-            }
+        testSessionValid(res, req, extractURL)
+    }
+}
+function extractURL(val, res, req) {
+    var routing = basedir;
+    var url = req.url;
+    url = basedir + url;
+    console.log(url);
+    if (fs.existsSync(url)) {
+        if (supported[path.extname(url)]) {
+            sendFile(url, supported[path.extname(url)], res, endCon);
         } else {
-            res.writeHead(404, { "Content-Type": "text/html" });
-            res.end();
+            res.writeHeader(403, { "Content-Type": "text/html" });
+            endCon(res);
         }
+    } else {
+        res.writeHeader(403, { "Content-Type": "text/html" });
+        endCon(res);
     }
     console.log(req.method);
 }
@@ -87,6 +91,9 @@ function checkPasswd(uname, passwd, req, res) {
             console.log("Passwort falsch");
         }
     });
+}
+
+function testSessionValid(res, req, callback) {
 }
 
 var server = http.createServer(handleRequest);
