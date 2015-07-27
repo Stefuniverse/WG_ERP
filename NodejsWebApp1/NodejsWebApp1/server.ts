@@ -31,7 +31,6 @@ function handleRequest(req, res) {
     } else if (url === '/logon') {
 
         if (req.method === 'POST') {
-            console.log('Login request gained from' + req.host);
             var fullBody = '';
 
             req.on('data', function (chunk) {
@@ -93,7 +92,6 @@ function checkPasswd(uname, passwd, req, res) {
         if (typeof row !== 'undefined') {
             if (row.passwd === passwd) {
                 req.session.data.user = uname;
-                console.log('hue');
                 sendFile("./www/myPage.html", "text/html", 200, res, endCon);
             } else {
                 sendFile("./www/login.html", "text/html", 401, res, endCon);
