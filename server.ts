@@ -7,12 +7,14 @@ var querystring = require('querystring');
 var sessions = require('sesh/lib/core').magicSession();
 
 //Basedirectory for the server
-var basedir = './www';
+var basedir = './WGERP/www';
 
 //supported filetypes
 var supported = {
     ".html": "text/html",
-    ".css": "text/css"
+    ".css": "text/css",
+    ".js": "text/javaScript",
+    ".json": "text/JSON",
 }
 
 //Analytical functions and ending the response
@@ -24,10 +26,11 @@ function endCon (res) {
 function handleRequest(req, res) {
     var routing = basedir;
     var url = req.url;
+    console.log("[INCOMMING] URL:" + req.url + " ,methode:" + req.method);
     if (url === '/') {
         testSessionValid(res, req, extractURL);
     } else if (url === '/style/loginstyle.css') {
-        sendFile('./www' + url, supported[path.extname(url)], 200, res, endCon);
+        sendFile(basedir + url, supported[path.extname(url)], 200, res, endCon);
     } else if (url === '/logon') {
 
         if (req.method === 'POST') {
@@ -42,14 +45,18 @@ function handleRequest(req, res) {
 
                 var data = querystring.parse(fullBody);
                 if (data.uname && data.password) {
+                    console.log((data.uname) + (data.password));
                     checkPasswd(data.uname, data.password, req, res);
                 } 
             });
         } else {
-            sendFile('./www/login.html' + url, supported[path.extname(url)], 405, res, endCon);
+            sendFile(basedir + '/login.html' + url, supported[path.extname(url)], 405, res, endCon);
         }
+    } else if (url === '/newsfeed' && req.method === 'POST') {
+        console.log("Accepted request, check creditals")
+        testSessionValid(res, req, generateNewsfile);
     } else {
-        testSessionValid(res, req, extractURL)
+        testSessionValid(res, req, extractURL);
     }
 }
 
@@ -60,27 +67,38 @@ function extractURL(res, req, val) {
     url = basedir + url;
     if (fs.existsSync(url)) {
         if (supported[path.extname(url)] && val) {
-            if (url === './www/' || url === './www/login.html') {
-                sendFile('./www/myPage.html', supported[path.extname(url)], 200, res, endCon);
+            if (url === basedir || url === './www/login.html') {
+                sendFile(basedir + '/myPage.html', supported[path.extname(url)], 200, res, endCon);
             } else {
                 sendFile(url, supported[path.extname(url)], 200, res, endCon);
             }
         } else {
-            sendFile('www/login.html', "text/html", 200, res, endCon);
+            sendFile(basedir + '/login.html', "text/html", 200, res, endCon);
         }
     } else {
-        sendFile('www/login.html', "text/html", 200, res, endCon);
+        sendFile(basedir + '/login.html', "text/html", 200, res, endCon);
     }
 }
 
-//sending the requested file, after authentication finished
+function generateNewsfile(res, req, val) {
+    console.log("Session valid, datas on the way");
+    if (val) {
+
+        sendFile(basedir + '/Testdata/newstests.json', "text/JSON", 200, res, endCon);
+    } else {
+        console.log("Zugriff Verweigert");
+        endCon(res);
+    }
+}
+//sending the requested file
 function sendFile(file, type, statcode, res, callback) {
-    fs.readFile(file, function (err, html) {
+    console.log("sending File:" + file);
+    fs.readFile(file, function (err, toSend) {
         if (err) {
             throw err;
         } else {
             res.writeHeader(statcode, { "Content-Type": type });
-            res.write(html);
+            res.write(toSend);
             callback(res);
         }
     });
@@ -92,12 +110,12 @@ function checkPasswd(uname, passwd, req, res) {
         if (typeof row !== 'undefined') {
             if (row.passwd === passwd) {
                 req.session.data.user = uname;
-                sendFile("./www/myPage.html", "text/html", 200, res, endCon);
+                sendFile(basedir + "/myPage.html", "text/html", 200, res, endCon);
             } else {
-                sendFile("./www/login.html", "text/html", 401, res, endCon);
+                sendFile(basedir + "/login.html", "text/html", 401, res, endCon);
             }
         } else {
-            sendFile("./www/login.html", "text/html", 401, res, endCon);
+            sendFile(basedir + "/login.html", "text/html", 401, res, endCon);
         }
     });
 }
@@ -115,4 +133,12 @@ function testSessionValid(res, req, callback) {
 var server = http.createServer(handleRequest);
 server.listen(1337);
 console.log('Server startet');
-var db = new sqlite3.Database('neu.db');
+var db = new sqlite3.Database('./WGERP/neu.db', sqlite3.OPEN_READWRITE, notification);
+
+function notification(err) {
+    if (err === null) {
+        console.log("Database started");
+    } else {
+        console.log("[CRITICAL] Databaseconnection was NOT successful");
+    }
+}
