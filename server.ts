@@ -7,7 +7,7 @@ var querystring = require('querystring');
 var sessions = require('sesh/lib/core').magicSession();
 
 //Basedirectory for the server
-var basedir = './WGERP/www';
+var basedir = './www';
 
 //supported filetypes
 var supported = {
@@ -137,7 +137,7 @@ function testSessionValid(res, req, callback) {
 var server = http.createServer(handleRequest);
 server.listen(1337);
 console.log('Server startet');
-var db = new sqlite3.Database('./WGERP/neu.db', sqlite3.OPEN_READWRITE, notification);
+var db = new sqlite3.Database('./neu.db', sqlite3.OPEN_READWRITE, notification);
 
 function notification(err) {
     if (err === null) {

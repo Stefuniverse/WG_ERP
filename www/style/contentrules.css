@@ -41,3 +41,15 @@
     margin-top:2px;
 
 }
+
+ul li {
+	position:relative;
+	padding-top:10px;
+	background-color:black;
+	visibility: hidden;
+
+}
+
+ul:hover li {
+	visibility:visible;
+}
