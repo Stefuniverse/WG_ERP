@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Meine Seite</title>
-    <link type="text/css" rel="stylesheet" href="style/loginbox.css" />
+    <title>WGS - My Space</title>
+    <link type="text/css" rel="stylesheet" href="style/navbox.css" />
     <link type="text/css" rel="stylesheet" href="style/contentrules.css" />
     <script src="scripts/newsparser.js" onload="getNews(1,20)"></script>
 </head>
@@ -11,16 +11,22 @@
     <nav>
         <a href="plans.html">WG-Schichtpläne</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="activities.html">WG-Aktivitäten</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="profile.html">Profil</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="logout.html">Logout</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <ul id="menu">
+            <img src="test.jpg" /> Stef
+            <li><a href="profile.html" class="menu">Profil</a></li>
+            <li><a href="logout.html" class="menu">Logout</a></li>
+        </ul>
     </nav>
     
+    <div id="control-div">
+        <h1 onload="getName()" id="headline">
+            Willkommen zurück,
+        </h1>
+    </div>
     <div id="content-div">
-        <h1>
-            Willkommen zurück, User
-        </h1><br /><br />
+        <br />
         <h2>
-            News Feed
+            News Feed - Loading...
         </h2>
     </div>
     

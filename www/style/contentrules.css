@@ -1,5 +1,43 @@
-﻿
-#content-div {
+﻿#content-div {
+    width:50%;
+    position:relative;
+    left:5%;
+}
+
+.chatp {
     background-color: #F7F7F7;
     box-shadow: #aaa 3px 3px 2px;
+    margin-bottom:10px;
+
+}
+
+.chatp h3 {
+    text-decoration:none;
+    font-size:initial;
+    position:relative;
+    left: 5%;
+    margin-bottom:2px;
+    padding-top:16px;
+}
+
+.chatp p {
+    position:relative;
+    left: 50px;
+    margin-top:8px;
+    padding-bottom:8px;
+}
+
+#control-div {
+    position:relative;
+    left:5%;
+}
+
+.sepl{
+    border: 1px solid #D0D0D0;
+    height:0;
+    width:90%;
+    color: #D0D0D0;
+    background-color: #D0D0D0;
+    margin-top:2px;
+
 }

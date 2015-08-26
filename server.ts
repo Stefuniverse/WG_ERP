@@ -65,6 +65,7 @@ function extractURL(res, req, val) {
     var routing = basedir;
     var url = req.url;
     url = basedir + url;
+    console.log("toSend:" + url);
     if (fs.existsSync(url)) {
         if (supported[path.extname(url)] && val) {
             if (url === basedir || url === './www/login.html') {
@@ -95,7 +96,8 @@ function sendFile(file, type, statcode, res, callback) {
     console.log("sending File:" + file);
     fs.readFile(file, function (err, toSend) {
         if (err) {
-            throw err;
+            console.log("Die Seite konnte nicht gesendet werden!")
+            callback(res);
         } else {
             res.writeHeader(statcode, { "Content-Type": type });
             res.write(toSend);
@@ -124,8 +126,10 @@ function checkPasswd(uname, passwd, req, res) {
 function testSessionValid(res, req, callback) {
     if (req.session.data.user != 'Guest') {
         callback(res, req, true);
+        console.log("valid session");
     } else {
         callback(res, req, false);
+        console.log("invalid session");
     }
 }
 
