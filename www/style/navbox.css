@@ -11,17 +11,20 @@ nav {
     padding:0 0 0 0;
 }
 
-nav a {
+nav .menu {
     position: relative;
     top: 20px;
     left:5%;
+}
+
+nav a {
     font-size:30px;
     text-decoration:solid;
     color: grey;
     font-weight:bold;
 }
 
-nav a:hover {
+nav .menu:hover {
     text-shadow: 0 0 15px #ff6a00,
     0 0 4px #ff6a00,
     0 0 4px #ff6a00,
@@ -36,12 +39,58 @@ nav a:hover {
     height:70px;
     position:fixed;
     right:0px;
-    top:5px;
+    top:0px;
     margin:0 0 0 0;
 }
 
 #menu img {
+    position:relative;
+    top:5px;
     height:60px;
     width:60px;
-    border:2px solid white;
+}
+
+#menu ul {
+    text-decoration:none;
+    list-style:none outside none;
+    position:relative;
+    top:3px;
+	padding:0 0 0 0;
+    margin:0 0 0 0;
+    width:150px;
+    visibility:hidden;
+
+}
+
+#menu ul li {
+    background-color:black;
+    float:left;
+    display:block;
+    height:70px;
+    width:150px;
+}
+
+#menu ul li:hover {
+    background-color:#ff6a00;
+}
+
+#menu ul li:hover a {
+    color:black;
+}
+
+#menu ul li a {
+    text-decoration:none;
+    display:block;
+    text-align:center;
+    height:70px;
+    width:150px;
+    float:left;
+}
+
+#menu:hover ul{
+	visibility:visible;
+}
+
+#headline {
+    display:inline-block;
 }

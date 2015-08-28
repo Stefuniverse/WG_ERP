@@ -6,7 +6,7 @@
             var parsedData = "";
             toParse.forEach(function (x, y) {
                 console.log(x.type);
-                if (x.type === 1) {
+                if (x.type === "Chat") {
                     console.log(x.text);
                     parsedData += ("<div class=\"chatp\"><h3>" + x.name + "</h3><hr  class=\"sepl\"/><p>" + x.text + "</p></div>");
                 }
