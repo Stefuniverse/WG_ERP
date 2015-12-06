@@ -82,16 +82,21 @@ function extractURL(res, req, val) {
 }
 
 function generateNewsfile(res, req, val) {
-
+    var result = [];
     function fillJSON(err, row) {
         if (err === null) {
             console.log("call");
+            result.push({ "date": row.dateCreated, "headline": row.headline, "name": row.uname, "pic": row.picture, "text": row.content, "time": row.timeCreated, "type": row.type });
         }
+    }
+    function prepareJSON(err, rows) {
+        console.log(rows + " rows found, prepare JSON");
+        sendVar(JSON.stringify(result), "text/JSON", 200, res, endCon);
     }
     console.log("Session valid, datas on the way");
     if (val) {
         var prep = 0;
-        db.each(
+        db.each("SELECT * FROM post", fillJSON, prepareJSON);
     } else {
         console.log("Zugriff Verweigert");
         endCon(res);
@@ -111,7 +116,12 @@ function sendFile(file, type, statcode, res, callback) {
         }
     });
 }
-
+function sendVar(file, type, statcode, res, callback) {
+    res.writeHeader(statcode, { "Content-Type": type });
+    console.log("sende" + file);
+    res.write(file);
+    callback(res);
+}
 //compares password to databaseentry given by users, not save
 function checkPasswd(uname, passwd, req, res) {
     db.get("SELECT passwd FROM test WHERE uname=\"" + uname + "\";", function (err, row) {
