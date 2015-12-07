@@ -49,7 +49,19 @@ function handleRequest(req, res) {
                     checkPasswd(data.uname, data.password, req, res);
                 } 
             });
-        } else {
+        } else if (url == '/post') {
+            if (req.method === 'POST') {
+                var fullBody = '';
+                req.on('data', function (chunk) {
+                    fullBody += chunk.toString();
+                });
+                req.on('end', function () {
+                    var data = querystring.parse(fullBody);
+                    postData(data, res, req, endCon);
+                    }
+              }
+        }
+                else {
             sendFile(basedir + '/login.html' + url, supported[path.extname(url)], 405, res, endCon);
         }
     } else if (url === '/newsfeed' && req.method === 'POST') {
@@ -57,6 +69,13 @@ function handleRequest(req, res) {
         testSessionValid(res, req, generateNewsfile);
     } else {
         testSessionValid(res, req, extractURL);
+    }
+}
+
+function postData(data, res, req, callback) {
+    if (data.msg) {
+        db.run("SELECT "Stef" AS uname, 1 AS type, "hiiiiii" AS content, "07101994" AS dateCreated, "181000" AS timeCreated, null AS picture, null AS headline");
+
     }
 }
 
@@ -85,7 +104,6 @@ function generateNewsfile(res, req, val) {
     var result = [];
     function fillJSON(err, row) {
         if (err === null) {
-            console.log("call");
             result.push({ "date": row.dateCreated, "headline": row.headline, "name": row.uname, "pic": row.picture, "text": row.content, "time": row.timeCreated, "type": row.type });
         }
     }
@@ -118,7 +136,6 @@ function sendFile(file, type, statcode, res, callback) {
 }
 function sendVar(file, type, statcode, res, callback) {
     res.writeHeader(statcode, { "Content-Type": type });
-    console.log("sende" + file);
     res.write(file);
     callback(res);
 }
