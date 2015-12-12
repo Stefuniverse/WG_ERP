@@ -47,24 +47,21 @@ function handleRequest(req, res) {
                 if (data.uname && data.password) {
                     console.log((data.uname) + (data.password));
                     checkPasswd(data.uname, data.password, req, res);
-                } 
+                }
             });
-        } else if (url == '/post') {
+        }
+    } else if (url === '/post') {
             if (req.method === 'POST') {
                 var fullBody = '';
-                req.on('data', function (chunk) {
+                req.on('data', function(chunk) {
                     fullBody += chunk.toString();
                 });
                 req.on('end', function () {
                     var data = querystring.parse(fullBody);
                     postData(data, res, req, endCon);
-                    }
-              }
-        }
-                else {
-            sendFile(basedir + '/login.html' + url, supported[path.extname(url)], 405, res, endCon);
-        }
-    } else if (url === '/newsfeed' && req.method === 'POST') {
+                });
+            }
+        } else if (url === '/newsfeed' && req.method === 'POST') {
         console.log("Accepted request, check creditals")
         testSessionValid(res, req, generateNewsfile);
     } else {
@@ -73,9 +70,13 @@ function handleRequest(req, res) {
 }
 
 function postData(data, res, req, callback) {
-    if (data.msg) {
-        db.run("SELECT "Stef" AS uname, 1 AS type, "hiiiiii" AS content, "07101994" AS dateCreated, "181000" AS timeCreated, null AS picture, null AS headline");
-
+    if (data.msg && data.type === "1") {
+        console.log("can take data");
+        db.run("INSERT INTO post SELECT \"" + req.session.data.user + "\" AS uname, 1 AS type, \"" + data.msg + "\" AS content, \"TODO\" AS dateCreated, \"TODO\" AS timeCreated, null AS picture, null AS headline");
+        callback(res);
+    } else {
+        console.log("invalid request: Msg" + data.msg + "As type:" + data.type);
+        callback(res);
     }
 }
 
