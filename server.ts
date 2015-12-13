@@ -27,45 +27,28 @@ function handleRequest(req, res) {
     var routing = basedir;
     var url = req.url;
     console.log("[INCOMMING] URL:" + req.url + " ,methode:" + req.method);
-    if (url === '/') {
-        testSessionValid(res, req, extractURL);
-    } else if (url === '/style/loginstyle.css') {
-        sendFile(basedir + url, supported[path.extname(url)], 200, res, endCon);
-    } else if (url === '/logon') {
-
-        if (req.method === 'POST') {
-            var fullBody = '';
-
-            req.on('data', function (chunk) {
-
-                fullBody += chunk.toString();
-            });
-
-            req.on('end', function () {
-
-                var data = querystring.parse(fullBody);
+    if (req.method === 'POST') {
+        var fullBody = '';
+        req.on('data', function (chunk) {
+            fullBody += chunk.toString();
+        });
+        req.on('end', function () {
+            var data = querystring.parse(fullBody);
+            if (url === '/logon') {
                 if (data.uname && data.password) {
                     console.log((data.uname) + (data.password));
                     checkPasswd(data.uname, data.password, req, res);
                 }
-            });
-        }
-    } else if (url === '/post') {
-            if (req.method === 'POST') {
-                var fullBody = '';
-                req.on('data', function(chunk) {
-                    fullBody += chunk.toString();
-                });
-                req.on('end', function () {
-                    var data = querystring.parse(fullBody);
-                    postData(data, res, req, endCon);
-                });
+            } else if (url === '/newsfeed') {
+                testSessionValid(res, req, generateNewsfile, data);
+            } else if (url === '/post') {
+                testSessionValid(res, req, postData, data);
+            } else {
+                res.end;
             }
-        } else if (url === '/newsfeed' && req.method === 'POST') {
-        console.log("Accepted request, check creditals")
-        testSessionValid(res, req, generateNewsfile);
+        });
     } else {
-        testSessionValid(res, req, extractURL);
+        testSessionValid(res, req, extractURL, null);
     }
 }
 
@@ -86,26 +69,31 @@ function extractURL(res, req, val) {
     var url = req.url;
     url = basedir + url;
     console.log("toSend:" + url);
-    if (fs.existsSync(url)) {
-        if (supported[path.extname(url)] && val) {
-            if (url === basedir || url === './www/login.html') {
-                sendFile(basedir + '/myPage.html', supported[path.extname(url)], 200, res, endCon);
-            } else {
+    if (val) {
+        if (fs.existsSync(url)) {
+            if (supported[path.extname(url)]) {
                 sendFile(url, supported[path.extname(url)], 200, res, endCon);
+            } else {
+                sendFile(basedir + '/myPage.html', "text/html" , 200, res, endCon);
             }
+        } else {
+            sendFile(basedir + '/myPage.html', "text/html" , 200, res, endCon);
+        }
+    } else {
+        if (url === (basedir+'/style/loginstyle.css')) {
+            sendFile(basedir + '/style/loginstyle.css', "text/html", 200, res, endCon);
         } else {
             sendFile(basedir + '/login.html', "text/html", 200, res, endCon);
         }
-    } else {
-        sendFile(basedir + '/login.html', "text/html", 200, res, endCon);
     }
 }
 
-function generateNewsfile(res, req, val) {
+function generateNewsfile(res, req, val, data) {
     var result = [];
     function fillJSON(err, row) {
         if (err === null) {
-            result.push({ "date": row.dateCreated, "headline": row.headline, "name": row.uname, "pic": row.picture, "text": row.content, "time": row.timeCreated, "type": row.type });
+            console.log(row.rowid);
+            result.push({ "headline": row.headline, "name": row.uname, "pic": row.picture, "text": row.content, "created": row.created, "type": row.type, "rowid" : row.rowid});
         }
     }
     function prepareJSON(err, rows) {
@@ -115,7 +103,7 @@ function generateNewsfile(res, req, val) {
     console.log("Session valid, datas on the way");
     if (val) {
         var prep = 0;
-        db.each("SELECT * FROM post", fillJSON, prepareJSON);
+        db.each("SELECT rowid, * FROM post ORDER BY datetime(created) DESC LIMIT "+data.upperLimit+" OFFSET "+data.lowerLimit, fillJSON, prepareJSON);
     } else {
         console.log("Zugriff Verweigert");
         endCon(res);
@@ -157,9 +145,9 @@ function checkPasswd(uname, passwd, req, res) {
 }
 
 //Easy Identitycheck, not too save
-function testSessionValid(res, req, callback) {
+function testSessionValid(res, req, callback, data) {
     if (req.session.data.user != 'Guest') {
-        callback(res, req, true);
+        callback(res, req, true, data);
         console.log("valid session");
     } else {
         callback(res, req, false);
